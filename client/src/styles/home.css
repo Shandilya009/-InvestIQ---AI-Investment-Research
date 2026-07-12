@@ -1,12 +1,14 @@
 html{
     scroll-behavior:smooth;
 }
+
 body{
     margin:0;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background:#ffffff;
-    color:#333333;
+    background: var(--bg-primary);
+    color: var(--text-primary);
 }
+
 /* Center the whole page */
 .home-container{
     max-width:1200px;
@@ -19,18 +21,22 @@ body{
 .header{
     margin-bottom:50px;
     animation:fadeDown .8s ease;
+    background: var(--header-gradient);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px var(--card-shadow);
 }
 
 .header h1{
     font-size:48px;
     font-weight:700;
     margin-bottom:15px;
-    color:#1a1a1a;
+    color: #ffffff;
 }
 
 .header p{
     font-size:18px;
-    color:#666666;
+    color: #f1f5f9;
     line-height:1.8;
 }
 
@@ -47,21 +53,21 @@ body{
     padding:18px 24px;
     font-size:19px;
     border-radius:8px;
-    border:2px solid #e0e0e0;
-    background:#ffffff;
-    color:#333333;
-    box-shadow:0 2px 8px rgba(0,0,0,.05);
+    border:2px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    box-shadow:0 2px 8px var(--card-shadow);
     transition:.3s;
 }
 
 .search-container input::placeholder {
-    color: #999999;
+    color: var(--text-tertiary);
 }
 
 .search-container input:focus{
-    border-color:#333333;
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
-    background:#fafafa;
+    border-color: var(--primary-color);
+    box-shadow:0 4px 12px var(--card-shadow);
+    outline: none;
 }
 
 /* Button */
@@ -71,32 +77,33 @@ body{
     padding:18px;
     border:none;
     border-radius:8px;
-    background:#333333;
+    background: var(--primary-color);
     color:#ffffff;
     font-size:18px;
     font-weight:600;
     cursor:pointer;
     transition:.35s;
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    box-shadow:0 4px 12px var(--card-shadow);
 }
 
 .search-container button:hover{
     transform:translateY(-2px);
-    box-shadow:0 6px 16px rgba(0,0,0,.15);
-    background:#1a1a1a;
+    box-shadow:0 6px 16px var(--card-shadow);
+    background: var(--primary-hover);
 }
 
 .search-container button:disabled {
-    background: gray;
+    background: var(--text-tertiary);
     cursor: not-allowed;
 }
+
 .loading-card {
     margin-top: 30px;
     padding: 40px;
-    background: #f5f5f5;
+    background: var(--card-bg);
     border-radius: 8px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px var(--card-shadow);
 }
 
 .loading-card h2 {
