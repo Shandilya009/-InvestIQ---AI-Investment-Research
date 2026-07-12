@@ -1,701 +1,586 @@
-# 🚀 InvestIQ - AI Investment Research
+# InvestIQ - Detailed Documentation
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://reactjs.org/)
+This document provides in-depth coverage of architecture, decisions, examples, and future improvements.
 
-AI-powered investment research platform that analyzes stocks from **60+ global exchanges** using real-time financial data, news sentiment, and Large Language Models to generate intelligent investment recommendations.
-
-**🌐 Live Demo:**
-- **Frontend:** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
-- **Backend API:** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
-
----
-## 📖 Overview
-
-InvestIQ is an AI-powered investment research platform that automates the process of analyzing publicly traded companies. Instead of manually gathering financial data, reading news articles, and interpreting metrics, users simply enter a stock symbol and receive a comprehensive AI-generated investment report.
-
-### What It Does
-
-The application:
-1. **Searches** for companies across 60+ global stock exchanges
-2. **Fetches** real-time financial data (price, market cap, P/E ratio, beta, dividend yield, etc.)
-3. **Retrieves** the latest company news with headlines and sentiment
-4. **Visualizes** 30-day price trends with interactive charts
-5. **Analyzes** all data using GPT-4 to generate investment insights
-6. **Delivers** a clear INVEST/PASS recommendation with confidence score and risk assessment
-
-### Who It's For
-
-- **Individual investors** researching potential investments
-- **Students** learning about financial analysis and AI agents
-- **Developers** exploring agentic AI architectures
-- **Anyone** wanting quick, data-driven stock insights without manual research
+## Table of Contents
+1. [How It Works (Architecture)](#how-it-works)
+2. [Key Decisions & Trade-offs](#key-decisions--trade-offs)
+3. [Example Runs](#example-runs)
+4. [Future Improvements](#future-improvements)
 
 ---
 
-## 🌟 Features
+## How It Works
 
-- 🤖 **AI-Powered Analysis** - OpenAI GPT-4 analyzes financial data and news
-- 🌍 **Global Markets** - Support for 60+ exchanges (US, India, UK, Japan, Germany, etc.)
-- 📊 **Real-Time Data** - Live stock prices, market cap, P/E ratios, and more
-- 📰 **News Integration** - Latest company news with sentiment analysis
-- 📈 **Historical Charts** - 30-day price trend visualization
-- ⚡ **Multi-Provider** - Automatic fallback between Yahoo Finance, Twelve Data, and Alpha Vantage
-- 🎯 **Smart Recommendations** - INVEST/PASS decisions with confidence scores
-- 🔒 **Risk Assessment** - Low/Medium/High risk classification
-- 🎨 **Theme Toggle** - Light and dark mode support
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+ installed
-- API Keys (see [Configuration](#-configuration))
-
-### Installation
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research.git
-cd -InvestIQ---AI-Investment-Research
-```
-
-2. **Install dependencies**
-```bash
-# Server
-cd server
-npm install
-
-# Client
-cd ../client
-npm install
-```
-
-3. **Configure environment variables**
-```bash
-# Server
-cd server
-cp .env.example .env
-# Edit .env and add your API keys
-
-# Client
-cd ../client
-cp .env.example .env
-# Edit .env if needed (default: http://localhost:5555)
-```
-
-4. **Start the application**
-```bash
-# Terminal 1 - Start server
-cd server
-npm run dev
-
-# Terminal 2 - Start client
-cd client
-npm run dev
-```
-
-5. **Open in browser**
-```
-http://localhost:5174
-```
-
----
-
-## 🔑 Configuration
-
-### Required API Keys
-
-| Provider | Purpose | Free Tier | Get Key |
-|----------|---------|-----------|---------|
-| **OpenRouter** | AI Analysis | Pay per use | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| **GNews** | Company News | 100/day | [gnews.io](https://gnews.io/) |
-
-### Optional (Fallback APIs)
-
-| Provider | Purpose | Free Tier | Get Key |
-|----------|---------|-----------|---------|
-| **Twelve Data** | Global Stock Data | 800/day | [twelvedata.com](https://twelvedata.com/) |
-| **Alpha Vantage** | Stock Data Fallback | 25/day | [alphavantage.co](https://www.alphavantage.co/support/#api-key) |
-
-> **Note:** Yahoo Finance is used as the primary data source (no API key required). Twelve Data and Alpha Vantage are fallbacks for when Yahoo Finance doesn't have data.
-
-### Environment Variables
-
-**Server (.env)**
-```env
-PORT=5555
-OPENROUTER_API_KEY=your_openrouter_key
-OPENROUTER_MODEL=openai/gpt-4o-mini
-GNEWS_API_KEY=your_gnews_key
-TWELVE_DATA_API_KEY=your_twelve_data_key (optional)
-ALPHA_VANTAGE_API_KEY=your_alphavantage_key (optional)
-```
-
-**Client (.env)**
-```env
-VITE_API_URL=http://localhost:5555
-```
-
----
-
-## 🌍 Supported Markets
-
-### ✅ Currently Working
-
-- 🇺🇸 **United States** - NASDAQ, NYSE (AAPL, MSFT, TSLA, IBM)
-- 🇮🇳 **India** - NSE, BSE (TCS.NS, RELIANCE.NS, INFY.NS, HDFCBANK.NS)
-- 🇬🇧 **United Kingdom** - LSE (BP.L, HSBA.L, SHEL.L)
-- 🇯🇵 **Japan** - TSE (7203.T, 9984.T)
-- 🇩🇪 **Germany** - XETRA (SAP, VOW3.DE, DAI.DE)
-- 🇨🇳 **China** - ADR listings (BABA, BIDU, JD)
-- 🇦🇺 **Australia** - ASX (BHP.AX, CBA.AX)
-
-### 📋 Stock Symbol Format
-
-| Exchange | Suffix | Example |
-|----------|--------|---------|
-| NSE India | `.NS` | RELIANCE.NS |
-| BSE India | `.BO` | RELIANCE.BO |
-| London | `.L` | BP.L |
-| Tokyo | `.T` | 7203.T |
-| Hong Kong | `.HK` | 0700.HK |
-| Australia | `.AX` | BHP.AX |
-| Germany | `.DE` | VOW3.DE |
-
----
----
-
-## � How It Works
-
-### High-Level Flow
+### Complete Data Flow
 
 ```
-1. User enters stock symbol (e.g., "AAPL", "TCS.NS")
-                ↓
-2. Frontend sends request to backend API
-                ↓
-3. Backend orchestrates data collection:
-   - Yahoo Finance API → Financial metrics
-   - Twelve Data API (fallback) → Global stock data
-   - Alpha Vantage API (fallback) → Additional coverage
-   - GNews API → Latest company news
-                ↓
-4. Data aggregation and formatting
-                ↓
-5. AI Agent (GPT-4) receives structured prompt with:
-   - Company financial data
-   - News headlines and summaries
-   - Historical price trends
-                ↓
-6. AI generates investment analysis:
-   - INVEST/PASS decision
-   - Confidence score (0-100)
-   - Risk level (Low/Medium/High)
-   - Detailed summary
-   - Pros and cons list
-                ↓
-7. Frontend displays comprehensive report with charts
-```
-
-### Detailed Architecture
-
-#### **Frontend (React + Vite)**
-
-**Components:**
-- `Dashboard.jsx` - Main page coordinating all components
-- `StockSearchInput.jsx` - Autocomplete search with debouncing
-- `PriceChart.jsx` - 30-day price visualization using Recharts
-- `AnalysisReport.jsx` - AI-generated investment report display
-- `ThemeToggle.jsx` - Dark/light mode switcher
-- `PageHeader.jsx` - App header and branding
-
-**State Management:**
-- React hooks (`useState`, `useEffect`) for component state
-- Theme context for global dark/light mode
-- Axios for API communication
-
-**User Flow:**
-1. User types company name in search box
-2. Autocomplete suggests matching companies
-3. User selects a company
-4. Loading spinner appears
-5. Backend processes request (5-15 seconds)
-6. Results render: financial metrics + chart + AI analysis
-
-#### **Backend (Node.js + Express)**
-
-**Layers:**
-
-1. **Routes** (`routes/`)
-   - `/api/search` - Company search endpoint
-   - `/api/analyze` - Stock analysis endpoint
-
-2. **Controllers** (`controllers/`)
-   - Handle HTTP requests
-   - Validate input
-   - Call services
-   - Return JSON responses
-
-3. **Services** (`services/`)
-   - Business logic layer
-   - Orchestrate multiple tool calls
-   - Format data for AI prompts
-
-4. **Tools** (`tools/`)
-   - `financeTool.js` - Yahoo Finance + fallback providers
-   - `newsTool.js` - GNews API integration
-   
-5. **Agents** (`agents/`)
-   - `investmentAgent.js` - Coordinates AI analysis
-   - Constructs prompts
-   - Calls OpenRouter API
-   - Parses AI responses
-
-6. **Prompts** (`prompts/`)
-   - `investmentPrompt.js` - Structured prompt templates
-   - Defines AI behavior and output format
-
-### Data Flow Example
-
-**Request:** Analyze "AAPL"
-
-```
-User Input: "AAPL"
-     ↓
-POST /api/analyze
-     ↓
-analyzeController.analyzeStock()
-     ↓
-analyzeService.analyzeStock()
-     ↓
-├─ financeTool.getStockData("AAPL")
-│  ├─ Try: Yahoo Finance
-│  │  └─ Success! → Return data
-│  ├─ (If fail) Try: Twelve Data
-│  └─ (If fail) Try: Alpha Vantage
-│
-├─ newsTool.getNews("AAPL")
-│  └─ GNews API → Return 5 articles
-│
-└─ investmentAgent.analyze(data, news)
-   └─ OpenRouter GPT-4 → AI analysis
-        ↓
-JSON Response:
+User Input ("AAPL")
+  ↓
+Dashboard Component (React)
+  ↓
+API Call: POST /api/analyze { symbol: "AAPL" }
+  ↓
+analyzeController.js
+  ↓
+analyzeService.js orchestrates:
+  ├─ financeTool.getStockData()
+  │   ├─ Try: Yahoo Finance (yahooFinance2 library)
+  │   │   → Success: Returns { price, marketCap, pe, beta, etc. }
+  │   ├─ On Fail: Try Twelve Data API
+  │   └─ On Fail: Try Alpha Vantage API
+  │
+  ├─ newsTool.getNews()
+  │   → GNews API: Returns 5 latest articles
+  │
+  └─ investmentAgent.analyze()
+      → Constructs prompt with all data
+      → OpenRouter API (GPT-4)
+      → Parses JSON response
+  ↓
+Response to frontend:
 {
-  "company": "Apple Inc.",
-  "symbol": "AAPL",
-  "decision": "INVEST",
-  "confidence": 85,
-  "risk": "Medium",
-  "summary": "Strong financials...",
-  "pros": ["Ecosystem", "Services growth"],
-  "cons": ["High valuation", "China risk"],
-  "finance": { price: 189.50, marketCap: 2.95T },
-  "news": [...],
-  "history": [...]
+  decision: "INVEST",
+  confidence: 85,
+  risk: "Medium",
+  summary: "...",
+  pros: [...],
+  cons: [...],
+  finance: {...},
+  news: [...],
+  history: [...]
 }
+  ↓
+AnalysisReport + PriceChart render results
 ```
 
-### AI Agent Design
+### AI Agent Prompt Structure
 
-The investment agent uses a **single-turn analysis** approach:
+```javascript
+const prompt = `
+You are a financial analyst. Analyze this company and provide
+an investment recommendation.
 
-**Prompt Structure:**
-```
-System: You are a financial analyst. Analyze this company and provide
-investment recommendation in JSON format.
+Company: ${company} (${symbol})
 
-User: Company: Apple Inc. (AAPL)
 Financial Metrics:
-- Price: $189.50
-- Market Cap: $2.95T
-- P/E Ratio: 31.2
-...
+- Current Price: $${price}
+- Market Cap: $${marketCap}
+- P/E Ratio: ${pe}
+- Beta: ${beta}
+- Dividend Yield: ${dividend}%
 
 Recent News:
-1. Apple launches new AI features
-2. iPhone sales exceed expectations
-...
+${news.map((n, i) => `${i+1}. ${n.title}`).join('\n')}
 
-Provide JSON with: decision, confidence, risk, summary, pros, cons
-```
+Price Trend (30 days):
+${priceHistory}
 
-**Why Single-Turn?**
-- Faster response (5-15 seconds vs. multi-turn conversations)
-- Deterministic output format
-- Lower API costs
-- Sufficient for educational purposes
-
-### API Fallback Strategy
-
-**Problem:** Free APIs have rate limits and coverage gaps.
-
-**Solution:** Three-tier fallback system
-
-```
-1. Yahoo Finance (Primary)
-   ✓ No API key required
-   ✓ Best coverage for US stocks
-   ✓ Fast response
-   ✗ Limited international coverage
-
-        ↓ (If fails)
-
-2. Twelve Data (Secondary)
-   ✓ 800 requests/day free
-   ✓ 60+ exchanges worldwide
-   ✓ Excellent international coverage
-   ✗ Requires API key
-
-        ↓ (If fails)
-
-3. Alpha Vantage (Fallback)
-   ✓ 25 requests/day free
-   ✓ Good US coverage
-   ✗ Very low rate limit
-```
-
-This ensures >95% uptime for stock data retrieval.
-
----
-
-## 🎯 Key Decisions & Trade-offs
-### Live Application
-
-- **Frontend (Vercel):** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
-- **Backend (Render):** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
-
-### Deploy Your Own
-
-#### Backend on Render (Free)
-
-1. Go to [render.com](https://render.com) and sign in
-2. Click **New +** → **Web Service**
-3. Connect your GitHub repository
-4. Configure:
-   - **Name:** `investiq-backend` (or any name)
-   - **Root Directory:** `server`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
-5. Add environment variables:
-   - `OPENROUTER_API_KEY`
-   - `OPENROUTER_MODEL` = `openai/gpt-4o-mini`
-   - `GNEWS_API_KEY`
-   - `TWELVE_DATA_API_KEY` (optional)
-   - `ALPHA_VANTAGE_API_KEY` (optional)
-   - `FRONTEND_URL` = your Vercel URL (add after deploying frontend)
-6. Click **Create Web Service**
-7. Wait 5-10 minutes for deployment
-8. Copy your backend URL (e.g., `https://your-app.onrender.com`)
-
-#### Frontend on Vercel (Free)
-
-1. Go to [vercel.com](https://vercel.com) and sign in
-2. Click **Add New** → **Project**
-3. Import your GitHub repository
-4. Configure:
-   - **Root Directory:** `client`
-   - **Framework Preset:** Vite
-5. Add environment variable:
-   - **Key:** `VITE_API_URL`
-   - **Value:** Your Render backend URL (from step above)
-6. Click **Deploy**
-7. Wait 2-3 minutes
-8. Your app is live!
-
-#### Update Backend with Frontend URL
-
-1. Go back to Render dashboard
-2. Click your service → **Environment**
-3. Add/Update: `FRONTEND_URL` = your Vercel URL
-4. Service will auto-redeploy
-
----
-
-## �️ Architecture
-
-### Tech Stack
-
-**Frontend**
-- React 19.2
-- Vite 8.1
-- Axios
-- Recharts (Charts)
-- CSS3
-
-**Backend**
-- Node.js
-- Express 5.2
-- Yahoo Finance API
-- Alpha Vantage API
-- Twelve Data API (optional)
-- GNews API
-- OpenRouter (GPT-4)
-
-### Data Flow
-
-```
-User Input → Search API → Yahoo Finance (Primary)
-                        ↓ (if fails)
-                     Twelve Data (Secondary)
-                        ↓ (if fails)
-                    Alpha Vantage (Fallback)
-                        ↓
-                Financial Data + News → OpenRouter AI
-                        ↓
-              AI Analysis → Frontend Dashboard
-```
-
----
-
-## 📁 Project Structure
-
-```
-InvestIQ/
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/    # UI components
-│   │   ├── context/       # React context (Theme)
-│   │   ├── pages/         # Page components
-│   │   ├── services/      # API services
-│   │   └── styles/        # CSS files
-│   └── package.json
-│
-├── server/                # Node.js backend
-│   ├── src/
-│   │   ├── agents/       # AI agents
-│   │   ├── controllers/  # Route controllers
-│   │   ├── routes/       # API routes
-│   │   ├── services/     # Business logic
-│   │   ├── tools/        # External API integrations
-│   │   └── prompts/      # AI prompts
-│   └── package.json
-│
-├── .gitignore
-└── README.md
-```
-
----
-
-## 🎯 API Endpoints
-
-### Base URL
-- **Local:** `http://localhost:5555`
-- **Production:** `https://investiq-ai-investment-research.onrender.com`
-
-#### Health Check
-```http
-GET /
-```
-
-#### Search Companies
-```http
-GET /api/search?q=apple
-```
-
-#### Analyze Stock
-```http
-POST /api/analyze
-Content-Type: application/json
-
+Provide your analysis in this exact JSON format:
 {
-  "company": "AAPL",
-  "symbol": "AAPL"
+  "decision": "INVEST" or "PASS",
+  "confidence": 0-100,
+  "risk": "Low", "Medium", or "High",
+  "score": 0-100,
+  "summary": "2-3 sentences",
+  "pros": ["point 1", "point 2", ...],
+  "cons": ["point 1", "point 2", ...]
 }
-```
-
-**Response Example:**
-```json
-{
-  "company": "Apple Inc.",
-  "decision": "INVEST",
-  "confidence": 85,
-  "score": 80,
-  "risk": "Medium",
-  "summary": "Strong financial performance...",
-  "pros": ["Strong brand", "Growing services revenue"],
-  "cons": ["High valuation", "Market saturation"],
-  "finance": { ... },
-  "news": [ ... ],
-  "history": [ ... ]
-}
+`;
 ```
 
 ---
 
-## 🛠️ Development
+## Key Decisions & Trade-offs
 
-### Build for Production
-```bash
-# Build client
-cd client
-npm run build
+###  1. Architecture: SPA + REST API
 
-# Build output in client/dist/
+**Decision:** Separate React frontend and Express backend
+
+**Why:**
+- Independent deployment (Vercel for frontend, Render for backend)
+- API can be reused by mobile apps, CLI tools
+- Frontend/backend teams can work independently
+- Easier testing and maintenance
+
+**Trade-offs:**
+- ✅ Pro: Scalable, flexible, modern architecture
+- ❌ Con: Two deployments instead of monolith
+- ❌ Con: CORS configuration needed
+
+---
+
+### 2. Data Source: Yahoo Finance Primary
+
+**Decision:** Use Yahoo Finance as primary, with fallbacks
+
+**Why:**
+- Free (no API key)
+- Comprehensive US market coverage
+- Real-time data
+- Large community support
+
+**Trade-offs:**
+- ✅ Pro: Zero cost, instant setup
+- ❌ Con: Unofficial API (could break)
+- ❌ Con: Limited international coverage
+- ✅ Pro: Fallbacks (Twelve Data, Alpha Vantage) mitigate risk
+
+---
+
+### 3. AI: OpenRouter Instead of Direct OpenAI
+
+**Decision:** Use OpenRouter as AI gateway
+
+**Why:**
+- Access multiple models (GPT-4, Claude, Llama) without code changes
+- Better rate limit handling
+- Pay-as-you-go pricing
+- Model switching for A/B testing
+
+**Trade-offs:**
+- ✅ Pro: Flexibility, no vendor lock-in
+- ✅ Pro: Cost optimization (switch to cheaper models)
+- ❌ Con: Extra API layer (minimal latency impact)
+- ❌ Con: Requires OpenRouter account
+
+---
+
+### 4. AI Approach: Single-Turn vs. Multi-Turn
+
+**Decision:** Single-turn analysis (one prompt, one response)
+
+**Why:**
+- Fast: 5-15 seconds vs. 30-60 seconds for multi-turn
+- Cost-effective: 1 API call vs. 3-5 calls
+- Predictable: Output format is consistent
+- Sufficient: Educational use case doesn't need deep reasoning
+
+**Trade-offs:**
+- ✅ Pro: Speed, cost, simplicity
+- ❌ Con: Less nuanced than multi-turn agents
+- ❌ Con: Can't ask follow-up questions
+
+**Future:** Add "Deep Analysis" button for multi-turn reasoning
+
+---
+
+### 5. No Database/Caching
+
+**Decision:** Stateless backend, no persistence
+
+**Why:**
+- Simpler deployment (no DB to manage)
+- Faster development (no schema migrations)
+- No data privacy concerns
+- Free hosting options available
+
+**Trade-offs:**
+- ✅ Pro: Zero ops overhead, fast to deploy
+- ❌ Con: Every request hits external APIs (slow + expensive)
+- ❌ Con: Can't save user history or portfolios
+- ❌ Con: No caching (same stock = same API calls)
+
+**Future:** Add Redis caching for 5-15 min TTL
+
+---
+
+### 6. JSON Output from AI
+
+**Decision:** Force AI to return strict JSON schema
+
+**Why:**
+- Predictable frontend rendering
+- Easy to validate and parse
+- Type-safe (TypeScript ready)
+- No text parsing needed
+
+**Trade-offs:**
+- ✅ Pro: Reliable, testable, clean
+- ❌ Con: AI sometimes fails to match schema
+- ❌ Con: Less flexible than free-form text
+
+**Mitigation:** Retry logic + schema validation
+
+---
+
+### 7. Theme Toggle
+
+**Decision:** Add dark/light mode with localStorage
+
+**Why:**
+- Modern UX expectation
+- Better accessibility
+- Reduces eye strain
+- Increases time on site
+
+**Trade-offs:**
+- ✅ Pro: Better UX, professional appearance
+- ❌ Con: 2x CSS maintenance (light + dark)
+- ❌ Con: Slight bundle size increase
+
+---
+
+## What We Left Out (and Why)
+
+| Feature | Reason | Future? |
+|---------|--------|---------|
+| User Auth | Adds complexity, not needed for MVP | ✅ Yes |
+| Database | Stateless is simpler | ✅ Yes (Redis) |
+| Portfolio Tracking | Requires auth + DB | ✅ Yes |
+| Historical Tracking | API cost concerns | ✅ Yes |
+| Technical Indicators | Out of MVP scope | ✅ Yes |
+| Sentiment Analysis | AI does this already | Maybe |
+| Watchlists | Needs persistence | ✅ Yes |
+| Comparison Tool | Complex UI | ✅ Yes |
+| PDF Export | Nice-to-have | ✅ Yes |
+| Email Alerts | Ops overhead | Maybe |
+| Multi-language | English-first | ✅ Yes |
+| Mobile App | API-ready | ✅ Yes |
+| Advanced Charts | Recharts is sufficient | ✅ Yes |
+| Backtesting | Out of scope | ❌ No |
+
+---
+
+## Example Runs
+
+### Example 1: Apple Inc. (AAPL) ✅ INVEST
+
+**Financial Snapshot:**
+```
+Price: $189.50
+Market Cap: $2.95T
+P/E Ratio: 31.2
+Beta: 1.25
+Dividend: 0.52%
+52W Range: $164.08 - $199.62
 ```
 
-### Linting
-```bash
-# Client
-cd client
-npm run lint
+**Recent News:**
+1. "Apple unveils new AI features in iOS 18"
+2. "iPhone 16 sales exceed expectations in China"
+3. "Services revenue hits all-time high of $23.1B"
+
+**AI Analysis:**
+
+| Metric | Value |
+|--------|-------|
+| Decision | **INVEST** |
+| Confidence | **85%** |
+| Risk | **Medium** |
+| Score | **82/100** |
+
+**Summary:**
+> "Apple demonstrates strong financial health with solid revenue growth driven by Services and iPhone demand. The company's ecosystem creates high customer retention, and new AI features position it well for future growth. While valuation is elevated (P/E 31.2), the brand strength, cash flow, and services expansion justify a premium."
+
+**Pros:**
+- ✅ Strong ecosystem lock-in (2B+ devices)
+- ✅ Services growing 15% YoY with high margins
+- ✅ New AI features driving upgrade cycle
+- ✅ Excellent cash flow ($110B+ annually)
+- ✅ Best-in-class brand loyalty
+
+**Cons:**
+- ⚠️ High P/E (31.2) limits upside
+- ⚠️ China revenue volatility
+- ⚠️ EU regulatory pressures on App Store
+- ⚠️ Slowing iPhone hardware growth
+
+**Interpretation:** Strong buy for long-term investors seeking quality growth.
+
+---
+
+### Example 2: Tesla Inc. (TSLA) ❌ PASS
+
+**Financial Snapshot:**
+```
+Price: $248.50
+Market Cap: $790B
+P/E Ratio: 72.5
+Beta: 2.03
+Dividend: 0.00%
+52W Range: $138.80 - $299.29
 ```
 
----
+**Recent News:**
+1. "Tesla Q4 deliveries miss estimates"
+2. "Cybertruck production faces delays"
+3. "Chinese EV makers gain market share"
 
-## 🚨 Troubleshooting
+**AI Analysis:**
 
-### Common Issues
+| Metric | Value |
+|--------|-------|
+| Decision | **PASS** |
+| Confidence | **70%** |
+| Risk | **High** |
+| Score | **42/100** |
 
-**1. "Company not found" error**
-- Verify stock symbol format (e.g., use `TCS.NS` not `TCS` for Indian stocks)
-- Check if stock is available on Yahoo Finance
-- Try with Alpha Vantage by adding API key
+**Summary:**
+> "Tesla faces mounting headwinds including intensifying competition from Chinese EV makers, production challenges with Cybertruck, and slowing delivery growth. The P/E ratio of 72.5 suggests significant overvaluation. While technology leadership remains strong, execution risks are high."
 
-**2. "Port already in use"**
-- Change `PORT` in `server/.env` (default: 5555)
-- Update `VITE_API_URL` in `client/.env` accordingly
+**Pros:**
+- ✅ Technology leadership in EVs
+- ✅ Strong brand and customer loyalty
+- ✅ Vertical integration advantage
+- ✅ Supercharger network moat
 
-**3. No news articles appearing**
-- Add GNews API key to `server/.env`
-- Check API rate limits (100 requests/day free)
+**Cons:**
+- ⚠️ Extremely high P/E (72.5) vs. auto sector (10-15)
+- ⚠️ Delivery growth slowing (<5%)
+- ⚠️ Chinese competition intensifying (BYD, NIO)
+- ⚠️ Cybertruck production issues
+- ⚠️ High beta (2.03) = amplified downside
+- ⚠️ No dividend, high cash burn
 
-**4. Rate limit errors**
-- Alpha Vantage: 25 requests/day (free)
-- Add Twelve Data API key for 800 requests/day
-
-**5. CORS errors in production**
-- Ensure `FRONTEND_URL` is set in Render environment variables
-- Check that URLs match exactly (including https://)
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+**Interpretation:** Pass for conservative investors. Valuation doesn't justify risk.
 
 ---
 
-## 👤 Author
+### Example 3: TCS (TCS.NS) ✅ INVEST
 
-**Shubham Shandilya**
+**Financial Snapshot:**
+```
+Price: ₹4,125.50
+Market Cap: ₹15.02T ($180B)
+P/E Ratio: 28.9
+Beta: 0.82
+Dividend: 1.45%
+52W Range: ₹3,311 - ₹4,256
+```
 
-- GitHub: [@Shandilya009](https://github.com/Shandilya009)
-- Project: [InvestIQ](https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
+**Recent News:**
+1. "TCS wins $2.5B multi-year UK deal"
+2. "Q3 earnings beat with 15% revenue growth"
+3. "AI and cloud services drive margin expansion"
+
+**AI Analysis:**
+
+| Metric | Value |
+|--------|-------|
+| Decision | **INVEST** |
+| Confidence | **78%** |
+| Risk | **Low** |
+| Score | **77/100** |
+
+**Summary:**
+> "TCS remains India's premier IT services company with strong fundamentals and consistent growth. Well-positioned for digital transformation trends in AI, cloud, and automation. Low beta (0.82) and steady dividend (1.45%) provide downside protection."
+
+**Pros:**
+- ✅ Market leader (50+ years track record)
+- ✅ Strong client relationships
+- ✅ Consistent 15% revenue growth
+- ✅ High margins (24%+)
+- ✅ Low beta (0.82) defensive stock
+- ✅ Zero debt, ₹38K crore cash
+
+**Cons:**
+- ⚠️ P/E (28.9) above sector average (22-25)
+- ⚠️ Client concentration in banking
+- ⚠️ Currency risk (70%+ USD/GBP)
+- ⚠️ Wage inflation pressuring margins
+
+**Interpretation:** Solid buy for risk-averse investors. Core portfolio holding.
 
 ---
 
-## 🙏 Acknowledgments
+### Example 4: Microsoft (MSFT) ✅ INVEST
 
-- [Yahoo Finance](https://finance.yahoo.com/) - Primary financial data provider
-- [Alpha Vantage](https://www.alphavantage.co/) - Fallback financial data
-- [OpenRouter](https://openrouter.ai/) - AI model access
-- [GNews](https://gnews.io/) - News data provider
-- [Recharts](https://recharts.org/) - Chart library
+**Financial Snapshot:**
+```
+Price: $425.20
+Market Cap: $3.15T
+P/E Ratio: 35.8
+Beta: 0.91
+Dividend: 0.76%
+52W Range: $362.90 - $468.35
+```
+
+**Recent News:**
+1. "Azure revenue grows 30% YoY"
+2. "Microsoft 365 Copilot adoption exceeds projections"
+3. "OpenAI partnership delivers $10B+ AI potential"
+
+**AI Analysis:**
+
+| Metric | Value |
+|--------|-------|
+| Decision | **INVEST** |
+| Confidence | **88%** |
+| Risk | **Medium** |
+| Score | **86/100** |
+
+**Summary:**
+> "Microsoft stands out as the most compelling mega-cap tech investment with balanced growth across cloud, productivity, gaming, and AI. The OpenAI partnership positions it as the primary beneficiary of enterprise AI adoption. Strong recurring revenue (65%+ subscription) and defensive characteristics make this suitable for core holdings."
+
+**Pros:**
+- ✅ Azure growing 30% YoY
+- ✅ AI leadership through OpenAI/Copilot
+- ✅ 65%+ recurring revenue
+- ✅ Enterprise customer lock-in
+- ✅ Diversified (Office + Azure + Xbox)
+- ✅ $100B+ cash reserves
+
+**Cons:**
+- ⚠️ P/E (35.8) near historical highs
+- ⚠️ Regulatory scrutiny (EU, US)
+- ⚠️ Activision integration risks
+- ⚠️ Cloud competition (AWS, GCP)
+
+**Interpretation:** Highest conviction pick (88%). Best AI exposure among mega-caps.
 
 ---
 
-## ⚠️ Disclaimer
+## Key Observations
 
-This application is for **educational and research purposes only**. It is NOT financial advice. Always do your own research and consult with a qualified financial advisor before making investment decisions. The creators are not responsible for any financial losses incurred from using this application.
+**Decision Distribution:**
+- 3 INVEST (Apple, TCS, Microsoft)
+- 1 PASS (Tesla)
+
+**Confidence Levels:**
+- Highest: Microsoft (88%) - Clear AI leadership
+- Lowest: Tesla (70%) - High uncertainty
+
+**Risk Profiles:**
+- Low: TCS (defensive IT services)
+- Medium: Apple, Microsoft (quality mega-caps)
+- High: Tesla (volatile growth stock)
+
+**AI Value-Add:**
+- Not just binary "buy/sell"
+- Explains reasoning with context
+- Considers valuation, growth, risk
+- Flags specific concerns
+- Actionable for different investor types
+
+---
+
+## Future Improvements
+
+### Tier 1: High Impact, Short Timeline (1-5 days)
+
+#### 1. Redis Caching
+**Problem:** Every request hits APIs → slow + expensive  
+**Solution:** Cache stock data for 5-15 minutes  
+**Impact:** 10x faster, 90% lower costs  
+**Implementation:** Redis Cloud free tier, 2-day effort
+
+#### 2. Comparison Tool
+**Feature:** Compare 2-4 stocks side-by-side  
+**UI:** Table + AI explanation of differences  
+**Impact:** Helps relative valuation decisions  
+**Effort:** 3-5 days
+
+#### 3. Advanced Charting
+**Upgrade:** TradingView widgets instead of Recharts  
+**Features:** Technical indicators, drawing tools, timeframes  
+**Impact:** Better UX for technical traders  
+**Effort:** 2-3 days
+
+#### 4. PDF Export
+**Feature:** Download AI report as PDF  
+**Library:** jsPDF or Puppeteer  
+**Impact:** Professional deliverable  
+**Effort:** 2-3 days
+
+#### 5. Rate Limiting
+**Problem:** Vulnerable to API abuse  
+**Solution:** Redis-based limiter (10 req/min per IP)  
+**Impact:** Protects API costs  
+**Effort:** 1 day
+
+---
+
+### Tier 2: High Value, Medium Effort (1-2 weeks)
+
+#### 6. Portfolio Tracking
+**Features:** Watchlist, performance tracking, alerts  
+**Requirements:** Auth (Firebase/Supabase) + DB  
+**Impact:** High user retention  
+**Effort:** 1-2 weeks
+
+#### 7. Historical Performance
+**Feature:** "AI recommended INVEST 3 months ago—was it right?"  
+**Implementation:** Store predictions in DB, compare to returns  
+**Impact:** Builds trust in AI  
+**Effort:** 1 week
+
+#### 8. Sector Analysis
+**Feature:** Analyze entire tech sector or compare banks  
+**Implementation:** Aggregate stocks, AI summarizes trends  
+**Impact:** Macro insights  
+**Effort:** 1 week
+
+#### 9. Multi-Turn Reasoning
+**Upgrade:** AI asks clarifying questions, does deeper analysis  
+**Trade-off:** Slower (30-60s), more expensive  
+**Use Case:** Different analysis for 1-year vs. 10-year horizon  
+**Effort:** 1 week
+
+#### 10. GraphQL API
+**Current:** REST API  
+**Upgrade:** GraphQL for flexible queries  
+**Benefit:** Frontend requests exactly what it needs  
+**Effort:** 1-2 weeks
+
+---
+
+### Tier 3: Long-Term Enhancements (2+ weeks)
+
+#### 11. Mobile App (React Native)
+**Benefit:** API-first architecture makes this easier  
+**Effort:** 2-3 weeks
+
+#### 12. ML Price Prediction
+**Model:** LSTM for 30-day forecast  
+**Disclaimer:** Educational only  
+**Effort:** 2-3 weeks
+
+#### 13. Microservices Architecture
+**Split:** Finance service, News service, AI service  
+**Benefit:** Independent scaling  
+**Effort:** 2-3 weeks
+
+#### 14. Comprehensive Testing
+**Add:** Unit (Jest), Integration (Supertest), E2E (Playwright)  
+**Effort:** 1-2 weeks
+
+#### 15. Freemium Model
+- Free: 5 analyses/day
+- Pro: Unlimited + advanced features ($10/month)  
+**Effort:** 1 week (Stripe integration)
+
+---
+
+### What NOT to Build
+
+❌ **Backtesting Engine** - Requires entirely different architecture, not worth complexity  
+❌ **Real-Time Trading** - Regulatory nightmare, out of scope  
+❌ **Social Network Features** - Scope creep, distracts from core value  
+❌ **Custom Indicators** - Too niche, low ROI  
+
+---
+
+## Conclusion
+
+InvestIQ demonstrates how AI agents can enhance financial research by:
+1. Aggregating data from multiple sources
+2. Structuring information for LLM consumption
+3. Generating actionable insights with reasoning
+4. Presenting results in user-friendly format
+
+**Key Learnings:**
+- Single-turn AI is sufficient for many use cases
+- Fallback APIs are critical for reliability
+- JSON output format ensures consistency
+- Stateless architecture simplifies deployment
+
+**Next Steps:**
+1. Add Redis caching (immediate impact)
+2. Build portfolio tracking (user retention)
+3. Implement comparison tool (high user value)
+4. Add historical performance tracking (builds trust)
 
 ---
 
 **Made with ❤️ by Shubham Shandilya**
-
-
-## 🔧 How It Works
-
-### High-Level Flow
-
-```
-1. User enters stock symbol (e.g., "AAPL", "TCS.NS")
-                ↓
-2. Frontend sends request to backend API
-                ↓
-3. Backend orchestrates data collection:
-   - Yahoo Finance API → Financial metrics
-   - Twelve Data API (fallback) → Global stock data
-   - Alpha Vantage API (fallback) → Additional coverage
-   - GNews API → Latest company news
-                ↓
-4. Data aggregation and formatting
-                ↓
-5. AI Agent (GPT-4) receives structured prompt with:
-   - Company financial data
-   - News headlines and summaries
-   - Historical price trends
-                ↓
-6. AI generates investment analysis:
-   - INVEST/PASS decision
-   - Confidence score (0-100)
-   - Risk level (Low/Medium/High)
-   - Detailed summary
-   - Pros and cons list
-                ↓
-7. Frontend displays comprehensive report with charts
-```
-
-### Detailed Architecture
-
-#### **Frontend (React + Vite)**
-
-**Components:**
-- `Dashboard.jsx` - Main page coordinating all components
-- `StockSearchInput.jsx` - Autocomplete search with debouncing
-- `PriceChart.jsx` - 30-day price visualization using Recharts
-- `AnalysisReport.jsx` - AI-generated investment report display
-- `ThemeToggle.jsx` - Dark/light mode switcher
-- `PageHeader.jsx` - App header and branding
-
-**State Management:**
-- React hooks (`useState`, `useEffect`) for component state
-- Theme context for global dark/light mode
-- Axios for API communication
-
-**User Flow:**
-1. User types company name in search box
-2. Autocomplete suggests matching companies
-3. User selects a company
-4. Loading spinner appears
-5. Backend processes request (5-15 seconds)
-6. Results render: financial metrics + chart + AI analysis
-
-#### **Backend (Node.js + Express)**
-
-**Layers:**
-
-1. **Routes** (`routes/`)
-   - `/api/search` - Company search endpoint
-   - `/api/analyze` - Stock analysis endpoint
-
-2. **Controllers** (`controllers/`)
-   - Handle HTTP requests
-   - Validate input
-   - Call services
-   - Return JSON responses
-
-3. **Services** (`services/`)
-   - Business logic layer
-   - Orchestrate multiple tool calls
-   - Format data for AI prompts
-
-4. **Tools** (`tools/`)
-   - `financeTool.js` - Yahoo Finance + fallback providers
-   - `newsTool.js` - GNews API integration
