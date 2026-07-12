@@ -33,7 +33,7 @@ app.use("/api/analyze", analyzeRoutes);
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
-        message: "InvestIQ API is running 🚀",
+        message: "InvestIQ API is running",
         version: "1.0.0",
         description: "AI-powered investment research platform"
     });
