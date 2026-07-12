@@ -3,8 +3,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://reactjs.org/)
+[![Deploy to Vercel](https://img.shields.io/badge/Deploy%20to-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
+[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?logo=render)](https://render.com)
 
 AI-powered investment research platform that analyzes stocks from **60+ global exchanges** using real-time financial data, news sentiment, and Large Language Models to generate intelligent investment recommendations.
+
+**🌐 Live Demo:** [Coming Soon - Deploy using guide below](#-deployment)
 
 ![InvestIQ Demo](https://via.placeholder.com/800x400/2563eb/ffffff?text=InvestIQ+-+AI+Investment+Research)
 
@@ -140,7 +144,27 @@ VITE_API_URL=http://localhost:5555
 
 ---
 
-## 🏗️ Architecture
+## � Deployment
+
+### Quick Deploy
+
+**Backend (Render - Free):**
+1. [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
+2. Connect GitHub repo → Select `server` folder
+3. Add environment variables (see [Deployment Guide](DEPLOYMENT_GUIDE.md))
+
+**Frontend (Vercel - Free):**
+1. [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
+2. Set root directory to `client`
+3. Add `VITE_API_URL` environment variable
+
+**📖 Full Guide:** See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions.
+
+**⚡ Quick Reference:** See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for quick deployment steps.
+
+---
+
+## �🏗️ Architecture
 
 ### Tech Stack
 
