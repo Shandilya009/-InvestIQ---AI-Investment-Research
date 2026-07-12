@@ -9,24 +9,41 @@ dotenv.config();
 
 const app = express();
 
-// Middleware FIRST
-app.use(cors());
+// Middleware
+app.use(
+    cors({
+        origin: [
+            "http://localhost:5173",
+            process.env.FRONTEND_URL
+        ],
+        credentials: true
+    })
+);
 
 app.use(express.json());
 
-// Routes AFTER middleware
+// Routes
 app.use("/api/search", searchRoutes);
-
 app.use("/api/analyze", analyzeRoutes);
 
+// Health Check
 app.get("/", (req, res) => {
-    res.json({
-        message: "Investment Research API is running"
+    res.status(200).json({
+        success: true,
+        message: "Investment Research API is running 🚀"
+    });
+});
+
+// 404 Handler
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found."
     });
 });
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

@@ -7,27 +7,37 @@ const yahooFinance = new YahooFinance({
 export const searchCompany = async (req, res) => {
     try {
 
-        const q = req.query.q;
+        const { q } = req.query;
 
-        if (!q || q.length < 2) {
-            return res.json([]);
+        if (!q || q.trim().length < 2) {
+            return res.status(200).json([]);
         }
 
-        const result = await yahooFinance.search(q);
+        const result = await yahooFinance.search(q.trim());
 
-        const companies = result.quotes
-            .filter(item => item.quoteType === "EQUITY")
+        const companies = (result.quotes || [])
+            .filter(item =>
+                item.quoteType === "EQUITY" &&
+                item.symbol &&
+                (item.longname || item.shortname)
+            )
             .slice(0, 8)
             .map(item => ({
                 symbol: item.symbol,
                 name: item.longname || item.shortname,
-                exchange: item.exchange
+                exchange: item.exchange || "N/A"
             }));
 
-        res.json(companies);
+        return res.status(200).json(companies);
 
-    } catch (err) {
-        console.error(err);
-        res.status(500).json([]);
+    } catch (error) {
+
+        console.error("Search Error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: "Unable to search companies."
+        });
+
     }
 };

@@ -5,31 +5,27 @@ import { getFinanceData, getHistoricalData } from "../tools/financeTool.js";
 import { getCompanyNews } from "../tools/newsTool.js";
 
 export async function runInvestmentAgent(company, symbol) {
+    try {
+        const client = new OpenAI({
+            apiKey: process.env.OPENROUTER_API_KEY,
+            baseURL: "https://openrouter.ai/api/v1",
+        });
 
-    console.log(
-        "OPENROUTER_API_KEY:",
-        process.env.OPENROUTER_API_KEY ? "Loaded ✅" : "Missing ❌"
-    );
+        // Fetch financial information
+        const finance = await getFinanceData(symbol || company);
 
-    const client = new OpenAI({
-        apiKey: process.env.OPENROUTER_API_KEY,
-        baseURL: "https://openrouter.ai/api/v1",
-    });
+        // Fetch historical stock prices
+        const history = await getHistoricalData(finance.symbol);
 
-    // Finance data
-    const finance = await getFinanceData(symbol || company);
+        // Fetch latest news
+        const news = await getCompanyNews(finance.company);
 
-    // Historical prices
-    const history = await getHistoricalData(finance.symbol);
-
-    // Latest news
-const news = await getCompanyNews(finance.company);
-    // Prompt
-    const prompt = `
+        // Build AI prompt
+        const prompt = `
 ${investmentPrompt}
 
 Company:
-${company}
+${finance.company}
 
 ====================================
 
@@ -52,28 +48,32 @@ Decide whether an investor should INVEST or PASS.
 Return ONLY valid JSON.
 `;
 
-    const completion = await client.chat.completions.create({
-        model: process.env.OPENROUTER_MODEL,
-        messages: [
-            {
-                role: "user",
-                content: prompt,
-            },
-        ],
-        temperature: 0.3,
-    });
+        const completion = await client.chat.completions.create({
+            model: process.env.OPENROUTER_MODEL,
+            messages: [
+                {
+                    role: "user",
+                    content: prompt,
+                },
+            ],
+            temperature: 0.3,
+        });
 
-    const aiResult = JSON.parse(
-        completion.choices[0].message.content
+        const content = completion.choices[0].message.content
             .replace(/```json/g, "")
             .replace(/```/g, "")
-            .trim()
-    );
+            .trim();
 
-    return {
-        ...aiResult,
-        finance,
-        news,
-        history,
-    };
+        const aiResult = JSON.parse(content);
+
+        return {
+            ...aiResult,
+            finance,
+            news,
+            history,
+        };
+    } catch (error) {
+        console.error("Investment Agent Error:", error.message);
+        throw error;
+    }
 }

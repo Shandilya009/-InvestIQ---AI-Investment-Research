@@ -1,32 +1,26 @@
 {
-  "name": "server",
+  "name": "investment-research-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend API for AI Investment Research Agent",
   "type": "module",
+  "main": "src/index.js",
+
   "scripts": {
+    "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+
+  "author": "Ritik Kumar",
+  "license": "MIT",
+
   "dependencies": {
-    "@langchain/community": "^1.1.29",
-    "@langchain/core": "^1.2.2",
-    "@langchain/google-genai": "^2.2.0",
-    "@langchain/openai": "^1.5.5",
-    "@tavily/core": "^0.7.6",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^4.2.1",
-    "langchain": "^1.5.3",
     "openai": "^6.46.0",
-    "recharts": "^3.9.2",
-    "yahoo-finance2": "^3.15.4",
-    "zod": "^4.4.3"
+    "yahoo-finance2": "^3.15.4"
   },
+
   "devDependencies": {
     "nodemon": "^3.1.14"
   }

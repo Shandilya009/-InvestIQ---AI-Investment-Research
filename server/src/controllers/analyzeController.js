@@ -2,26 +2,28 @@ import { analyzeCompanyService } from "../services/analyzeService.js";
 
 export const analyzeCompany = async (req, res) => {
     try {
+        const { company, symbol } = req.body;
 
-        const { company } = req.body;
-
-        if (!company) {
+        if (!company || company.trim() === "") {
             return res.status(400).json({
+                success: false,
                 message: "Company name is required."
             });
         }
 
         const result = await analyzeCompanyService(
-            req.body.company,
-            req.body.symbol
+            company.trim(),
+            symbol
         );
-        res.status(200).json(result);
+
+        return res.status(200).json(result);
 
     } catch (error) {
 
-        console.error("Analyze Controller Error:", error);
+        console.error("Analyze Controller Error:", error.message);
 
-        res.status(500).json({
+        return res.status(500).json({
+            success: false,
             message: error.message || "Internal Server Error"
         });
 
