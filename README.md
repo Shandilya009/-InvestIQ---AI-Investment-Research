@@ -3,14 +3,12 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19.2-blue.svg)](https://reactjs.org/)
-[![Deploy to Vercel](https://img.shields.io/badge/Deploy%20to-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
-[![Deploy to Render](https://img.shields.io/badge/Deploy%20to-Render-46E3B7?logo=render)](https://render.com)
 
 AI-powered investment research platform that analyzes stocks from **60+ global exchanges** using real-time financial data, news sentiment, and Large Language Models to generate intelligent investment recommendations.
 
-**🌐 Live Demo:** [Coming Soon - Deploy using guide below](#-deployment)
-
-![InvestIQ Demo](https://via.placeholder.com/800x400/2563eb/ffffff?text=InvestIQ+-+AI+Investment+Research)
+**🌐 Live Demo:**
+- **Frontend:** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
+- **Backend API:** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
 
 ---
 
@@ -24,6 +22,7 @@ AI-powered investment research platform that analyzes stocks from **60+ global e
 - ⚡ **Multi-Provider** - Automatic fallback between Yahoo Finance, Twelve Data, and Alpha Vantage
 - 🎯 **Smart Recommendations** - INVEST/PASS decisions with confidence scores
 - 🔒 **Risk Assessment** - Low/Medium/High risk classification
+- 🎨 **Theme Toggle** - Light and dark mode support
 
 ---
 
@@ -91,14 +90,16 @@ http://localhost:5174
 | Provider | Purpose | Free Tier | Get Key |
 |----------|---------|-----------|---------|
 | **OpenRouter** | AI Analysis | Pay per use | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| **Alpha Vantage** | Stock Data Fallback | 25/day | [alphavantage.co](https://www.alphavantage.co/support/#api-key) |
+| **GNews** | Company News | 100/day | [gnews.io](https://gnews.io/) |
 
-### Optional API Keys (Recommended)
+### Optional (Fallback APIs)
 
 | Provider | Purpose | Free Tier | Get Key |
 |----------|---------|-----------|---------|
-| **GNews** | Company News | 100/day | [gnews.io](https://gnews.io/) |
-| **Twelve Data** | Enhanced Global Stocks | 800/day | [twelvedata.com](https://twelvedata.com/) |
+| **Twelve Data** | Global Stock Data | 800/day | [twelvedata.com](https://twelvedata.com/) |
+| **Alpha Vantage** | Stock Data Fallback | 25/day | [alphavantage.co](https://www.alphavantage.co/support/#api-key) |
+
+> **Note:** Yahoo Finance is used as the primary data source (no API key required). Twelve Data and Alpha Vantage are fallbacks for when Yahoo Finance doesn't have data.
 
 ### Environment Variables
 
@@ -108,7 +109,8 @@ PORT=5555
 OPENROUTER_API_KEY=your_openrouter_key
 OPENROUTER_MODEL=openai/gpt-4o-mini
 GNEWS_API_KEY=your_gnews_key
-ALPHA_VANTAGE_API_KEY=your_alphavantage_key
+TWELVE_DATA_API_KEY=your_twelve_data_key (optional)
+ALPHA_VANTAGE_API_KEY=your_alphavantage_key (optional)
 ```
 
 **Client (.env)**
@@ -144,27 +146,61 @@ VITE_API_URL=http://localhost:5555
 
 ---
 
-## � Deployment
+## 🚀 Deployment
 
-### Quick Deploy
+### Live Application
 
-**Backend (Render - Free):**
-1. [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com)
-2. Connect GitHub repo → Select `server` folder
-3. Add environment variables (see [Deployment Guide](DEPLOYMENT_GUIDE.md))
+- **Frontend (Vercel):** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
+- **Backend (Render):** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
 
-**Frontend (Vercel - Free):**
-1. [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
-2. Set root directory to `client`
-3. Add `VITE_API_URL` environment variable
+### Deploy Your Own
 
-**📖 Full Guide:** See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions.
+#### Backend on Render (Free)
 
-**⚡ Quick Reference:** See [QUICK_DEPLOY.md](QUICK_DEPLOY.md) for quick deployment steps.
+1. Go to [render.com](https://render.com) and sign in
+2. Click **New +** → **Web Service**
+3. Connect your GitHub repository
+4. Configure:
+   - **Name:** `investiq-backend` (or any name)
+   - **Root Directory:** `server`
+   - **Build Command:** `npm install`
+   - **Start Command:** `npm start`
+5. Add environment variables:
+   - `OPENROUTER_API_KEY`
+   - `OPENROUTER_MODEL` = `openai/gpt-4o-mini`
+   - `GNEWS_API_KEY`
+   - `TWELVE_DATA_API_KEY` (optional)
+   - `ALPHA_VANTAGE_API_KEY` (optional)
+   - `FRONTEND_URL` = your Vercel URL (add after deploying frontend)
+6. Click **Create Web Service**
+7. Wait 5-10 minutes for deployment
+8. Copy your backend URL (e.g., `https://your-app.onrender.com`)
+
+#### Frontend on Vercel (Free)
+
+1. Go to [vercel.com](https://vercel.com) and sign in
+2. Click **Add New** → **Project**
+3. Import your GitHub repository
+4. Configure:
+   - **Root Directory:** `client`
+   - **Framework Preset:** Vite
+5. Add environment variable:
+   - **Key:** `VITE_API_URL`
+   - **Value:** Your Render backend URL (from step above)
+6. Click **Deploy**
+7. Wait 2-3 minutes
+8. Your app is live!
+
+#### Update Backend with Frontend URL
+
+1. Go back to Render dashboard
+2. Click your service → **Environment**
+3. Add/Update: `FRONTEND_URL` = your Vercel URL
+4. Service will auto-redeploy
 
 ---
 
-## �🏗️ Architecture
+## �️ Architecture
 
 ### Tech Stack
 
@@ -207,6 +243,7 @@ InvestIQ/
 ├── client/                 # React frontend
 │   ├── src/
 │   │   ├── components/    # UI components
+│   │   ├── context/       # React context (Theme)
 │   │   ├── pages/         # Page components
 │   │   ├── services/      # API services
 │   │   └── styles/        # CSS files
@@ -223,15 +260,16 @@ InvestIQ/
 │   └── package.json
 │
 ├── .gitignore
-├── README.md
-└── API_CONFIGURATION.md
+└── README.md
 ```
 
 ---
 
 ## 🎯 API Endpoints
 
-### Base URL: `http://localhost:5555`
+### Base URL
+- **Local:** `http://localhost:5555`
+- **Production:** `https://investiq-ai-investment-research.onrender.com`
 
 #### Health Check
 ```http
@@ -273,31 +311,7 @@ Content-Type: application/json
 
 ---
 
-## 📸 Screenshots
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/800x400/f3f4f6/1f2937?text=Stock+Search+Dashboard)
-
-### Analysis Report
-![Analysis](https://via.placeholder.com/800x400/f3f4f6/1f2937?text=AI+Investment+Analysis)
-
-### Price Chart
-![Chart](https://via.placeholder.com/800x400/f3f4f6/1f2937?text=30-Day+Price+Chart)
-
----
-
 ## 🛠️ Development
-
-### Run Tests
-```bash
-# Server tests
-cd server
-npm test
-
-# Client tests
-cd client
-npm test
-```
 
 ### Build for Production
 ```bash
@@ -338,11 +352,15 @@ npm run lint
 - Alpha Vantage: 25 requests/day (free)
 - Add Twelve Data API key for 800 requests/day
 
+**5. CORS errors in production**
+- Ensure `FRONTEND_URL` is set in Render environment variables
+- Check that URLs match exactly (including https://)
+
 ---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
@@ -383,459 +401,4 @@ This application is for **educational and research purposes only**. It is NOT fi
 
 ---
 
-## 📊 Project Stats
-
-- **Languages**: JavaScript, JSX, CSS
-- **Frameworks**: React, Express
-- **APIs**: 5+ external integrations
-- **Markets**: 60+ global exchanges
-- **Real-time**: Yes
-- **AI-Powered**: Yes (GPT-4)
-
----
-
 **Made with ❤️ by Shubham Shandilya**
-
-An AI-powered investment research application that analyzes publicly traded companies from **worldwide stock exchanges** using **real-time financial data**, **latest news**, and **Large Language Models (LLMs)** to generate an investment recommendation.
-
-## 🌍 NEW: Global Stock Coverage
-
-The application now supports **125,000+ stocks from 60+ exchanges worldwide** including:
-
-- 🇮🇳 **India** (NSE, BSE) - Zomato, Reliance, TCS, Infosys
-- 🇺🇸 **United States** (NYSE, NASDAQ) - Apple, Microsoft, Tesla
-- 🇬🇧 **United Kingdom** (LSE)
-- 🇯🇵 **Japan** (TSE)
-- 🇩🇪 **Germany** (XETRA)
-- 🇨🇳 **China** (Shanghai, Shenzhen)
-- And 50+ more exchanges!
-
-See **[GLOBAL_STOCKS_UPDATE.md](./GLOBAL_STOCKS_UPDATE.md)** for setup instructions.
-
----
-
-# Overview
-
-The AI Investment Research Agent simplifies company research by combining multiple data sources into a single investment report.
-
-Users can:
-
-- Search companies using autocomplete
-- View real-time financial information
-- Analyze one-month stock price trends
-- Read the latest company news
-- Receive an AI-generated investment recommendation
-- Understand the company's strengths, weaknesses, and investment risk
-
-The application is designed for educational and research purposes and demonstrates how AI agents can assist in financial analysis.
-
----
-
-# How to Run It
-
-## Prerequisites
-
-- Node.js (v18 or later)
-- npm
-- OpenRouter API Key
-- GNews API Key
-- **Twelve Data API Key** (for worldwide stock coverage - FREE)
-
----
-
-## Clone the Repository
-
-```bash
-git clone https://github.com/YOUR_USERNAME/Investment_Research.git
-
-cd Investment_Research
-```
-
----
-
-## Backend Setup
-
-Navigate to the server directory.
-
-```bash
-cd server
-
-npm install
-```
-
-Create a `.env` file inside the **server** folder.
-
-```env
-PORT=5002
-
-OPENROUTER_API_KEY=YOUR_OPENROUTER_API_KEY
-OPENROUTER_MODEL=openai/gpt-4o-mini
-
-GNEWS_API_KEY=YOUR_GNEWS_API_KEY
-
-# For worldwide stock coverage (Indian, Asian, European stocks)
-# Get FREE API key from: https://twelvedata.com/
-TWELVE_DATA_API_KEY=YOUR_TWELVE_DATA_API_KEY
-```
-
-> 💡 **Important**: Get your FREE Twelve Data API key to access Indian and global stocks. See [GLOBAL_STOCKS_UPDATE.md](./GLOBAL_STOCKS_UPDATE.md) for detailed setup instructions.
-
-Run the backend.
-
-```bash
-npm run dev
-```
-
-The server will start at:
-
-```
-http://localhost:5002
-```
-
----
-
-## Frontend Setup
-
-Open another terminal.
-
-```bash
-cd client
-
-npm install
-```
-
-Create a `.env` file inside the **client** folder.
-
-```env
-VITE_API_URL=http://localhost:5002
-```
-
-Run the frontend.
-
-```bash
-npm run dev
-```
-
-The application will open at
-
-```
-http://localhost:5173
-```
-
----
-
-# How It Works
-
-The application follows a multi-stage AI agent workflow.
-
-```
-User
- │
- ▼
-Search Company
- │
- ▼
-Autocomplete API
- │
- ▼
-Selected Company Symbol
- │
- ▼
-Yahoo Finance API
- │
- ├── Company Profile
- ├── Financial Metrics
- └── Historical Prices
- │
- ▼
-GNews API
- │
- ▼
-Latest Company News
- │
- ▼
-OpenRouter LLM
- │
- ▼
-Investment Analysis
- │
- ▼
-Frontend Dashboard
-```
-
-## Architecture
-
-### Frontend
-
-- React.js
-- Vite
-- Axios
-- Recharts
-- CSS3
-
-Responsibilities:
-
-- Company search
-- Stock chart visualization
-- Financial dashboard
-- News display
-- AI recommendation UI
-
----
-
-### Backend
-
-- Node.js
-- Express.js
-
-Responsibilities:
-
-- Company search
-- Yahoo Finance integration
-- GNews integration
-- AI prompt construction
-- OpenRouter communication
-- JSON response generation
-
----
-
-### External APIs
-
-**Yahoo Finance (Primary)**
-
-Used for:
-
-- Stock price
-- Market capitalization
-- P/E ratio
-- Beta
-- Dividend yield
-- Historical stock prices
-- Company information
-- Best coverage for US stocks
-
----
-
-**Twelve Data API (Fallback)**
-
-Used for:
-
-- Worldwide stock coverage (60+ exchanges)
-- Indian stocks (NSE, BSE)
-- Asian, European, and global markets
-- When Yahoo Finance doesn't have data
-- 125,000+ stock symbols
-
----
-
-**GNews API**
-
-Used for:
-
-- Latest company news
-- Headlines
-- Article summaries
-- Article links
-
----
-
-**OpenRouter**
-
-Used to generate:
-
-- Investment recommendation
-- Confidence score
-- Risk assessment
-- Summary
-- Pros
-- Cons
-
----
-
-# Key Decisions & Trade-offs
-
-## Why Yahoo Finance?
-
-Yahoo Finance provides free access to comprehensive financial information without requiring paid subscriptions, making it suitable for educational projects.
-
----
-
-## Why GNews?
-
-Instead of scraping news websites, GNews provides structured news articles through a simple REST API, making integration easier and more reliable.
-
----
-
-## Why OpenRouter?
-
-OpenRouter allows switching between multiple Large Language Models without changing application code, making the system more flexible.
-
----
-
-## Why React + Express?
-
-Separating the frontend and backend keeps the application modular and easier to maintain.
-
----
-
-## Why AI-generated recommendations?
-
-Rather than relying solely on financial ratios, the AI model combines numerical financial data with recent news to produce a more context-aware investment analysis.
-
----
-
-## Trade-offs
-
-### Included
-
-- Real-time financial data
-- Real-time news
-- AI-generated report
-- Stock chart
-- Company autocomplete
-
----
-
-### Not Included
-
-To keep the project focused, the following features were intentionally omitted:
-
-- User authentication
-- Portfolio management
-- Stock prediction models
-- Technical indicators (MACD, RSI)
-- Sentiment analysis
-- PDF report export
-- Dark mode
-- Database storage
-- Historical recommendation tracking
-
-These features can be added in future versions.
-
----
-
-# Example Runs
-
----
-
-## Example 1 — Apple Inc.
-
-**Recommendation**
-
-```
-INVEST
-```
-
-**Confidence**
-
-```
-78%
-```
-
-**Risk**
-
-```
-Medium
-```
-
-**Summary**
-
-Apple continues to demonstrate strong financial performance driven by its ecosystem, services revenue, and global brand loyalty. While valuation remains relatively high, the company maintains stable cash flows and long-term growth potential.
-
----
-
-## Example 2 — Microsoft Corporation
-
-**Recommendation**
-
-```
-INVEST
-```
-
-**Confidence**
-
-```
-82%
-```
-
-**Risk**
-
-```
-Medium
-```
-
-**Summary**
-
-Microsoft benefits from continued cloud growth, AI investments, enterprise software leadership, and strong recurring revenue. Azure expansion and productivity products support long-term growth.
-
----
-
-## Example 3 — Tesla Inc.
-
-**Recommendation**
-
-```
-PASS
-```
-
-**Confidence**
-
-```
-70%
-```
-
-**Risk**
-
-```
-High
-```
-
-**Summary**
-
-Tesla remains a market leader in electric vehicles but faces increasing competition, pricing pressure, and regulatory uncertainty. High valuation and slowing growth increase investment risk despite long-term innovation potential.
-
----
-
-# Project Structure
-
-```
-Investment_Research
-│
-├── client
-│   ├── src
-│   │   ├── components
-│   │   ├── pages
-│   │   ├── services
-│   │   └── styles
-│   └── package.json
-│
-├── server
-│   ├── src
-│   │   ├── agents
-│   │   ├── controllers
-│   │   ├── routes
-│   │   ├── services
-│   │   ├── prompts
-│   │   └── tools
-│   └── package.json
-│
-└── README.md
-```
-
----
-
-# Future Improvements
-
-- Portfolio Tracker
-- Compare Multiple Companies
-- Watchlist
-- Analyst Ratings
-- Earnings Calendar
-- Technical Indicators
-- Dark Mode
-- Authentication
-- AI Chat Assistant
-- PDF Investment Reports
-
----
-
