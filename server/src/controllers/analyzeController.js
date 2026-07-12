@@ -22,9 +22,18 @@ export const analyzeCompany = async (req, res) => {
 
         console.error("Analyze Controller Error:", error.message);
 
-        return res.status(500).json({
+        // Provide user-friendly error messages
+        let statusCode = 500;
+        let userMessage = error.message || "Internal Server Error";
+        
+        // If it's a "company not found" error, use 404
+        if (error.message?.includes("not found") || error.message?.includes("Unable to find")) {
+            statusCode = 404;
+        }
+
+        return res.status(statusCode).json({
             success: false,
-            message: error.message || "Internal Server Error"
+            message: userMessage
         });
 
     }

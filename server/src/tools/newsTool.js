@@ -10,12 +10,12 @@ export async function getCompanyNews(company) {
 
         console.log("Searching GNews for:", cleanCompany);
 
+        // Removed country restriction to support international news
         const url =
             `https://gnews.io/api/v4/search?` +
             `q=${encodeURIComponent(cleanCompany)}&` +
             `lang=en&` +
-            `country=us&` +
-            `max=5&` +
+            `max=10&` +
             `apikey=${process.env.GNEWS_API_KEY}`;
 
         const response = await fetch(url);
@@ -26,7 +26,14 @@ export async function getCompanyNews(company) {
         console.log("Response:", data);
 
         if (!response.ok) {
-            throw new Error("Failed to fetch GNews");
+            console.error("GNews API Error:", data);
+            // Don't throw error - return empty array instead
+            return [];
+        }
+
+        if (!data.articles || data.articles.length === 0) {
+            console.log("No news articles found");
+            return [];
         }
 
         return data.articles.map(article => ({
@@ -40,8 +47,9 @@ export async function getCompanyNews(company) {
 
     } catch (error) {
 
-        console.error(error);
-        throw error;
+        console.error("News Tool Error:", error);
+        // Return empty array instead of throwing to allow analysis to continue
+        return [];
 
     }
 

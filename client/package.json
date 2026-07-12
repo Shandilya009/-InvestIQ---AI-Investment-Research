@@ -1,9 +1,9 @@
 {
-  "name": "investment-research-client",
+  "name": "investiq-client",
   "private": true,
   "version": "1.0.0",
-  "description": "Frontend for AI Investment Research Agent",
-  "author": "Ritik Kumar",
+  "description": "InvestIQ - AI-powered investment research platform for global markets",
+  "author": "",
   "type": "module",
 
   "scripts": {

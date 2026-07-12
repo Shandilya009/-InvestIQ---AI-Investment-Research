@@ -12,10 +12,7 @@ const app = express();
 // Middleware
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://investment-research-agent-ten.vercel.app"
-    ],
+    origin: ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
     credentials: true
   })
@@ -31,7 +28,9 @@ app.use("/api/analyze", analyzeRoutes);
 app.get("/", (req, res) => {
     res.status(200).json({
         success: true,
-        message: "Investment Research API is running 🚀"
+        message: "InvestIQ API is running 🚀",
+        version: "1.0.0",
+        description: "AI-powered investment research platform"
     });
 });
 

@@ -7,9 +7,10 @@
 
 /* Apply styles to the whole page */
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: #f5f7fb;
-  color: #222;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #ffffff;
+  color: #333333;
+  min-height: 100vh;
 }
 
 /* Remove underline from links */
