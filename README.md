@@ -11,6 +11,28 @@ AI-powered investment research platform that analyzes stocks from **60+ global e
 - **Backend API:** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
 
 ---
+## 📖 Overview
+
+InvestIQ is an AI-powered investment research platform that automates the process of analyzing publicly traded companies. Instead of manually gathering financial data, reading news articles, and interpreting metrics, users simply enter a stock symbol and receive a comprehensive AI-generated investment report.
+
+### What It Does
+
+The application:
+1. **Searches** for companies across 60+ global stock exchanges
+2. **Fetches** real-time financial data (price, market cap, P/E ratio, beta, dividend yield, etc.)
+3. **Retrieves** the latest company news with headlines and sentiment
+4. **Visualizes** 30-day price trends with interactive charts
+5. **Analyzes** all data using GPT-4 to generate investment insights
+6. **Delivers** a clear INVEST/PASS recommendation with confidence score and risk assessment
+
+### Who It's For
+
+- **Individual investors** researching potential investments
+- **Students** learning about financial analysis and AI agents
+- **Developers** exploring agentic AI architectures
+- **Anyone** wanting quick, data-driven stock insights without manual research
+
+---
 
 ## 🌟 Features
 
@@ -145,9 +167,203 @@ VITE_API_URL=http://localhost:5555
 | Germany | `.DE` | VOW3.DE |
 
 ---
+---
 
-## 🚀 Deployment
+## � How It Works
 
+### High-Level Flow
+
+```
+1. User enters stock symbol (e.g., "AAPL", "TCS.NS")
+                ↓
+2. Frontend sends request to backend API
+                ↓
+3. Backend orchestrates data collection:
+   - Yahoo Finance API → Financial metrics
+   - Twelve Data API (fallback) → Global stock data
+   - Alpha Vantage API (fallback) → Additional coverage
+   - GNews API → Latest company news
+                ↓
+4. Data aggregation and formatting
+                ↓
+5. AI Agent (GPT-4) receives structured prompt with:
+   - Company financial data
+   - News headlines and summaries
+   - Historical price trends
+                ↓
+6. AI generates investment analysis:
+   - INVEST/PASS decision
+   - Confidence score (0-100)
+   - Risk level (Low/Medium/High)
+   - Detailed summary
+   - Pros and cons list
+                ↓
+7. Frontend displays comprehensive report with charts
+```
+
+### Detailed Architecture
+
+#### **Frontend (React + Vite)**
+
+**Components:**
+- `Dashboard.jsx` - Main page coordinating all components
+- `StockSearchInput.jsx` - Autocomplete search with debouncing
+- `PriceChart.jsx` - 30-day price visualization using Recharts
+- `AnalysisReport.jsx` - AI-generated investment report display
+- `ThemeToggle.jsx` - Dark/light mode switcher
+- `PageHeader.jsx` - App header and branding
+
+**State Management:**
+- React hooks (`useState`, `useEffect`) for component state
+- Theme context for global dark/light mode
+- Axios for API communication
+
+**User Flow:**
+1. User types company name in search box
+2. Autocomplete suggests matching companies
+3. User selects a company
+4. Loading spinner appears
+5. Backend processes request (5-15 seconds)
+6. Results render: financial metrics + chart + AI analysis
+
+#### **Backend (Node.js + Express)**
+
+**Layers:**
+
+1. **Routes** (`routes/`)
+   - `/api/search` - Company search endpoint
+   - `/api/analyze` - Stock analysis endpoint
+
+2. **Controllers** (`controllers/`)
+   - Handle HTTP requests
+   - Validate input
+   - Call services
+   - Return JSON responses
+
+3. **Services** (`services/`)
+   - Business logic layer
+   - Orchestrate multiple tool calls
+   - Format data for AI prompts
+
+4. **Tools** (`tools/`)
+   - `financeTool.js` - Yahoo Finance + fallback providers
+   - `newsTool.js` - GNews API integration
+   
+5. **Agents** (`agents/`)
+   - `investmentAgent.js` - Coordinates AI analysis
+   - Constructs prompts
+   - Calls OpenRouter API
+   - Parses AI responses
+
+6. **Prompts** (`prompts/`)
+   - `investmentPrompt.js` - Structured prompt templates
+   - Defines AI behavior and output format
+
+### Data Flow Example
+
+**Request:** Analyze "AAPL"
+
+```
+User Input: "AAPL"
+     ↓
+POST /api/analyze
+     ↓
+analyzeController.analyzeStock()
+     ↓
+analyzeService.analyzeStock()
+     ↓
+├─ financeTool.getStockData("AAPL")
+│  ├─ Try: Yahoo Finance
+│  │  └─ Success! → Return data
+│  ├─ (If fail) Try: Twelve Data
+│  └─ (If fail) Try: Alpha Vantage
+│
+├─ newsTool.getNews("AAPL")
+│  └─ GNews API → Return 5 articles
+│
+└─ investmentAgent.analyze(data, news)
+   └─ OpenRouter GPT-4 → AI analysis
+        ↓
+JSON Response:
+{
+  "company": "Apple Inc.",
+  "symbol": "AAPL",
+  "decision": "INVEST",
+  "confidence": 85,
+  "risk": "Medium",
+  "summary": "Strong financials...",
+  "pros": ["Ecosystem", "Services growth"],
+  "cons": ["High valuation", "China risk"],
+  "finance": { price: 189.50, marketCap: 2.95T },
+  "news": [...],
+  "history": [...]
+}
+```
+
+### AI Agent Design
+
+The investment agent uses a **single-turn analysis** approach:
+
+**Prompt Structure:**
+```
+System: You are a financial analyst. Analyze this company and provide
+investment recommendation in JSON format.
+
+User: Company: Apple Inc. (AAPL)
+Financial Metrics:
+- Price: $189.50
+- Market Cap: $2.95T
+- P/E Ratio: 31.2
+...
+
+Recent News:
+1. Apple launches new AI features
+2. iPhone sales exceed expectations
+...
+
+Provide JSON with: decision, confidence, risk, summary, pros, cons
+```
+
+**Why Single-Turn?**
+- Faster response (5-15 seconds vs. multi-turn conversations)
+- Deterministic output format
+- Lower API costs
+- Sufficient for educational purposes
+
+### API Fallback Strategy
+
+**Problem:** Free APIs have rate limits and coverage gaps.
+
+**Solution:** Three-tier fallback system
+
+```
+1. Yahoo Finance (Primary)
+   ✓ No API key required
+   ✓ Best coverage for US stocks
+   ✓ Fast response
+   ✗ Limited international coverage
+
+        ↓ (If fails)
+
+2. Twelve Data (Secondary)
+   ✓ 800 requests/day free
+   ✓ 60+ exchanges worldwide
+   ✓ Excellent international coverage
+   ✗ Requires API key
+
+        ↓ (If fails)
+
+3. Alpha Vantage (Fallback)
+   ✓ 25 requests/day free
+   ✓ Good US coverage
+   ✗ Very low rate limit
+```
+
+This ensures >95% uptime for stock data retrieval.
+
+---
+
+## 🎯 Key Decisions & Trade-offs
 ### Live Application
 
 - **Frontend (Vercel):** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
@@ -402,3 +618,84 @@ This application is for **educational and research purposes only**. It is NOT fi
 ---
 
 **Made with ❤️ by Shubham Shandilya**
+
+
+## 🔧 How It Works
+
+### High-Level Flow
+
+```
+1. User enters stock symbol (e.g., "AAPL", "TCS.NS")
+                ↓
+2. Frontend sends request to backend API
+                ↓
+3. Backend orchestrates data collection:
+   - Yahoo Finance API → Financial metrics
+   - Twelve Data API (fallback) → Global stock data
+   - Alpha Vantage API (fallback) → Additional coverage
+   - GNews API → Latest company news
+                ↓
+4. Data aggregation and formatting
+                ↓
+5. AI Agent (GPT-4) receives structured prompt with:
+   - Company financial data
+   - News headlines and summaries
+   - Historical price trends
+                ↓
+6. AI generates investment analysis:
+   - INVEST/PASS decision
+   - Confidence score (0-100)
+   - Risk level (Low/Medium/High)
+   - Detailed summary
+   - Pros and cons list
+                ↓
+7. Frontend displays comprehensive report with charts
+```
+
+### Detailed Architecture
+
+#### **Frontend (React + Vite)**
+
+**Components:**
+- `Dashboard.jsx` - Main page coordinating all components
+- `StockSearchInput.jsx` - Autocomplete search with debouncing
+- `PriceChart.jsx` - 30-day price visualization using Recharts
+- `AnalysisReport.jsx` - AI-generated investment report display
+- `ThemeToggle.jsx` - Dark/light mode switcher
+- `PageHeader.jsx` - App header and branding
+
+**State Management:**
+- React hooks (`useState`, `useEffect`) for component state
+- Theme context for global dark/light mode
+- Axios for API communication
+
+**User Flow:**
+1. User types company name in search box
+2. Autocomplete suggests matching companies
+3. User selects a company
+4. Loading spinner appears
+5. Backend processes request (5-15 seconds)
+6. Results render: financial metrics + chart + AI analysis
+
+#### **Backend (Node.js + Express)**
+
+**Layers:**
+
+1. **Routes** (`routes/`)
+   - `/api/search` - Company search endpoint
+   - `/api/analyze` - Stock analysis endpoint
+
+2. **Controllers** (`controllers/`)
+   - Handle HTTP requests
+   - Validate input
+   - Call services
+   - Return JSON responses
+
+3. **Services** (`services/`)
+   - Business logic layer
+   - Orchestrate multiple tool calls
+   - Format data for AI prompts
+
+4. **Tools** (`tools/`)
+   - `financeTool.js` - Yahoo Finance + fallback providers
+   - `newsTool.js` - GNews API integration
