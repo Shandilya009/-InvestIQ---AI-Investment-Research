@@ -1,4 +1,12 @@
-# InvestIQ - Detailed Documentation
+# InvestIQ - AI Investment Research Platform
+
+**🌐 Live Demo:** [https://invest-iq-ai-investment-research.vercel.app](https://invest-iq-ai-investment-research.vercel.app)
+
+**📦 GitHub Repository:** [https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research](https://github.com/Shandilya009/-InvestIQ---AI-Investment-Research)
+
+**🔗 Backend API:** [https://investiq-ai-investment-research.onrender.com](https://investiq-ai-investment-research.onrender.com)
+
+---
 
 This document provides in-depth coverage of architecture, decisions, examples, and future improvements.
 
