@@ -1,5 +1,4 @@
 import PriceChart from "./PriceChart";
-import TickerLogo from "./TickerLogo";
 
 function AnalysisReport({ result }) {
     return (
